@@ -19,6 +19,7 @@
 - Express.js
 - MongoDB
 - Mongoose
+- Nodemon
 
 ### Features and Libraries
 
@@ -29,6 +30,7 @@
 - multer for handling file uploads
 - pdfkit for generating PDF reports
 - validator for input validation
+- otp-generator for generating one-time passwords (OTPs) for visitor verification
   
 ### supporting technologies
 
@@ -66,6 +68,7 @@
 2. Install necessary dependencies:
    ```bash
    npm install express mongoose jsonwebtoken bcrypt nodemailer multer cloudinary pdfkit validator dotenv cors
+   npm i --save-dev nodemon
    ```
 3. Create the following folder structure:
    ```
@@ -101,11 +104,15 @@
     ```
 4. Set up the Express server in `index.js`.
 5. connect the MongoDB database using Mongoose in `config/db.js`.
-6. Implement authentication and authorization logic in `controllers/authController.js` and `middleware/authMiddleware.js`.
-7. Create routes for handling visitor management, appointments, passes, and check logs in the respective route files.
-8. Implement the business logic for each feature in the corresponding controller files.
-9. Use utility functions for sending emails and generating PDFs as needed.
-10. Test the API endpoints using tools like Postman or Thunder Client.
-11. 
+6. Create Mongoose models for User, Visitor, Appointment, Pass, Check Logs, and OTP in the `models` directory.
+7. Set up Cloudinary configuration in `config/cloudinary.js` for image uploads.
+8. Create authentication routes and controllers for user registration, login, and role-based access control in `routes/auth.js` and `controllers/authController.js`.
+9. Implement authentication and authorization logic in `controllers/authController.js` and `middleware/authMiddleware.js`.
+10. Create routes for handling visitor management, appointments, passes, and check logs in the respective route files.
+11. Implement the business logic for each feature in the corresponding controller files.
+12. Use utility functions for sending emails and generating PDFs as needed.
+13. Test the API endpoints using tools like Postman or Thunder Client.
+    
+    
 
 

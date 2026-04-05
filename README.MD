@@ -3,14 +3,14 @@
 # Backend Visitor Pass
 
 ## Description
--item 1 User verification /role basis ("Admin", "Employee", "Security")
--item 2 User Verification /visitors 
--item 3 Employee approved visitors
--item 4 Security check-in/check-out detils 
--item 5 Visitor create request for approval 
--item 6 Employee view visitor details/send confirmation email to visitor/Give Scheduled time for visit
--item 7 Visitor check-in/check-out details
--item 8 Admin view all details of visitors/employee/security/logs  Details
+- User verification /role basis ("Admin", "Employee", "Security")
+- User Verification /visitors 
+- Employee approved visitors
+- Security check-in/check-out detils 
+- Visitor create request for approval 
+- Employee view visitor details/send confirmation email to visitor/Give Scheduled time for visit
+- Visitor check-in/check-out details
+- Admin view all details of visitors/employee/security/logs  Details
 
 ## Technologies Used
 

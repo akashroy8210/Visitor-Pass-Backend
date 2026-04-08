@@ -4,9 +4,9 @@ const Appointment = require("../models/appointmentModel")
 const { sendEmail } = require("../utils/SendEmail")
 const Pass = require("../models/passModel")
 const fs = require("fs")
-const {uploadPDF} = require("../utils/uploadPdf")
-const {generatePDF }= require("../utils/createPdf")
-const {generateQR} =require("../utils/generateQR")
+const { uploadPDF } = require("../utils/uploadPdf")
+const { generatePDF } = require("../utils/createPdf")
+const { generateQR } = require("../utils/generateQR")
 exports.getAllAppointments = async (req, res) => {
   try {
     const { id } = req.params
@@ -25,6 +25,10 @@ exports.getAllAppointments = async (req, res) => {
 exports.createAppointmentResponse = async (req, res) => {
   try {
     const { date, status, employeeId, appointmentId } = req.body
+    const pass = await Pass.find({ appointmentId: appointmentId })
+    if (pass.length > 0) {
+      return res.status(400).json({ message: "Pass Already Created" })
+    }
     const appointment = await Appointment.findById(appointmentId)
     if (!appointment) {
       return res.status(400).json({ message: "No Appointment Found" })
@@ -35,12 +39,12 @@ exports.createAppointmentResponse = async (req, res) => {
     const visitor = await User.findById(appointment.visitorId)
     console.log(visitor._id)
     console.log(visitor.email)
-    if(!visitor || !employee){
-      return res.status(400).json({message:"Visitor or Employee Not Found"})
+    if (!visitor || !employee) {
+      return res.status(400).json({ message: "Visitor or Employee Not Found" })
     }
     // giving the response of the appointment 
     await Appointment.findByIdAndUpdate(appointmentId, { status })
-    
+
     //checkt the status is apporoved or not
     if (status === "approved") {
 
@@ -60,9 +64,9 @@ exports.createAppointmentResponse = async (req, res) => {
       const data = {
         passId: pass._id,
         status: status,
-        visitor: visitor.name,
+        name: visitor.name,
         email: visitor.email,
-        employee: employee.name,
+        employeeName: employee.name,
         date: new Date(),
         validFrom: pass.validFrom.toDateString(),
         validTo: pass.validTo.toDateString(),
@@ -70,9 +74,10 @@ exports.createAppointmentResponse = async (req, res) => {
       }
       // creating the pdf
       const pdfBuffer = await generatePDF(data)
+      console.log("pdf length",pdfBuffer.length)
       // uploading the pdf
       const pdfUrl = await uploadPDF(pdfBuffer)
-
+      console.log(pdfUrl)
       // updating the pass
       pass.pdfUrl = pdfUrl
       // saving the pass
@@ -226,12 +231,15 @@ exports.createAppointmentResponse = async (req, res) => {
 </html>
                 `
       })
-      
+
     }
+    const passVisitor=await Pass.findOne({visitorId:appointment.visitorId,appointmentId:appointmentId})
+    
     res.status(200).json({
       message: "Appointment Updated Successfully",
       appointment,
-      
+      passVisitor
+
     })
   } catch (error) {
     res.status(500).json({ message: error.message })

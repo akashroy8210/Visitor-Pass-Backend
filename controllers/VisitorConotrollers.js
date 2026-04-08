@@ -2,9 +2,14 @@ const validator=require("validator")
 const User=require("../models/userModel")
 const Visitor=require("../models/visitorModel")
 const Appointment=require("../models/appointmentModel")
+const Logs=require("../models/logsModel")
 exports.createAppointment=async(req,res)=>{
     try{
         const {visitorId,employeeId,date,status}=req.body
+        const existingAppointment=await Appointment.findOne({visitorId:visitorId,employeeId:employeeId})
+        if(existingAppointment){
+            return res.status(400).json({message:"You Already Have an Appointment"})
+        }
         const visitor=await User.findById(visitorId)
         if(!visitor){
             return res.status(400).json({message:"Please Signup First"})
@@ -29,10 +34,23 @@ exports.getAllAppointments=async(req,res)=>{
         const appointemnt=await Appointment.find({
             visitorId:visitor._id
         }).sort({createdAt:-1})
-        if(!appointemnt){
+        if(appointemnt.length===0){
             return res.status(400).json({message:"No Appointment Found"})
         }
         res.status(200).json({appointemnt})
+    }catch(error){
+        return res.status(500).json({message:error.message})
+    }
+}
+
+exports.getlogsByVisitor=async(req,res)=>{
+    try{
+        const {id}=req.params
+        const logs=await Logs.find({visitorId:id}).sort({createdAt:-1})
+        if(!logs){
+            return res.status(400).json({message:"No Logs Found"})
+        }
+        res.status(200).json({logs})
     }catch(error){
         return res.status(500).json({message:error.message})
     }

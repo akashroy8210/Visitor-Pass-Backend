@@ -3,7 +3,7 @@ const mongoose=require("mongoose")
 const passSchema=mongoose.Schema({
     visitorId :{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"Visitor",
+        ref:"User",
         required:true
     },
     appointmentId:{

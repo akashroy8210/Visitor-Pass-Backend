@@ -1,10 +1,12 @@
 const express=require("express")
-const {createStaff, getStaffs, getVisitors}=require("../controllers/AdminControllers")
-const {adminMiddleware}=require("../middleware/AdminMiddleware")
+const {createStaff, getStaffs, getVisitors, getAllLogs}=require("../controllers/AdminControllers")
+const {authMiddleware}=require("../middleware/AdminMiddleware")
 const {allowRoles}=require("../middleware/RoleMiddleware")
 const router=express.Router()
 
-router.post('/addStaff',adminMiddleware,allowRoles("Admin"), createStaff)
-router.get('/allStaff',adminMiddleware,getStaffs)
-router.get('/allVisitors',getVisitors)
+router.post('/addStaff',authMiddleware,allowRoles("Admin"), createStaff)
+router.get('/allStaff',authMiddleware,allowRoles("Admin"),getStaffs)
+router.get('/allVisitors',authMiddleware,allowRoles("Admin"),getVisitors)
+router.get('/allLogs',authMiddleware,allowRoles("Admin"),getAllLogs)
+
 module.exports=router

@@ -117,23 +117,21 @@
 ## Admin
 - All Staff details //done
 - All Visitor details //done
-- All Logs details
+- All Logs details //done
 - All Appointment details //done
-- All Passes details
+- All Passes details 
 ## Employee
 - Appointment details  //done
-- Passes details 
 - Visitor approval  //done
-- Send confirmation email to visitor
-- Give Scheduled time for visit
+- Send confirmation email to visitor //done
+- Give Scheduled time for visit //done
   
 ## Security
-- Check-in/check-out details of visitors
-- View visitor details
-- View logs details
+- Check-in/check-out details of visitors //done
+- View logs details //done
 ## Visitor
 - Create request for approval //done
-- Check-in/check-out details
+- Check-in/check-out details //done
 - View appointment details    //done
-- View pass details
+- View pass details //done
 -

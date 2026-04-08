@@ -5,6 +5,7 @@ const AuthRoutes=require('./routes/AuthRoutes')
 const AdminRoutes=require("./routes/AdminRoutes")
 const visitorRoutes=require("./routes/VisitorRoutes")
 const employeeRoutes=require("./routes/EmployeeRoutes")
+const securityRoutes=require("./routes/SecurityRoutes")
 dotenv.config()
 const server=express()
 server.use(express.json())
@@ -16,6 +17,7 @@ server.use('/api/users',AuthRoutes)
 server.use('/api/admin',AdminRoutes)
 server.use('/api/users/visitor',visitorRoutes)
 server.use('/api/users/employee',employeeRoutes)
+server.use('/api/users/security',securityRoutes)
 const PORT=process.env.PORT || 8080
 
 server.listen(PORT,()=>{

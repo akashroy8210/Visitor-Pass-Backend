@@ -1,21 +1,20 @@
 const PDFDocument = require("pdfkit")
-const fs = require("fs")
 
 exports.generatePDF = (data) => {
-  return new Promise((resolve,reject) => {
+  return new Promise((resolve, reject) => {
 
     const doc = new PDFDocument({ size: "A4", margin: 50 })
     const buffers = []
-    doc.on("data",buffers.push.bind(buffers))
-    doc.on("end",()=>{
-      const pdfData=Buffer.concat(buffers)
+    doc.on("data", buffers.push.bind(buffers))
+    doc.on("end", () => {
+      const pdfData = Buffer.concat(buffers)
       resolve(pdfData)
     })
 
     // 🎨 HEADER
     doc
       .fontSize(20)
-      .fillColor("#333")
+      .fillColor("black")
       .text("My Office", { align: "center" })
 
     doc.moveDown()
@@ -25,23 +24,21 @@ exports.generatePDF = (data) => {
       .fontSize(16)
       .fillColor(data.status === "approved" ? "green" : "red")
       .text(
-        `STATUS: ${data.status.toUpperCase()} ${
-          data.status === "approved" ? "✅" : "❌"
-        }`,
+        `STATUS: ${data.status.toUpperCase()}`,
         { align: "center" }
       )
 
     doc.moveDown(2)
 
     // VISITOR INFO
-    doc.fillColor("#000").fontSize(12)
+    doc.fillColor("black").fontSize(12)
     doc.text(`Name: ${data.name}`)
     doc.text(`Email: ${data.email}`)
 
     doc.moveDown()
 
     // APPOINTMENT INFO
-    doc.text(`Date: ${data.date}`)
+    doc.text(`Date: ${new Date(data.date).toDateString()}`)
     doc.text(`Valid From: ${data.validFrom}`)
     doc.text(`Valid To: ${data.validTo}`)
 
@@ -62,10 +59,18 @@ exports.generatePDF = (data) => {
     // QR CODE (only if approved)
     if (data.status === "approved" && data.qrImage) {
       doc.moveDown()
-      doc.image(data.qrImage, {
-        fit: [150, 150],
-        align: "center"
-      })
+      try {
+        const qrBuffer = Buffer.from(
+          data.qrImage.split(",")[1],
+          "base64"
+        )
+        doc.image(qrBuffer, {
+          fit: [150, 150],
+          align: "center"
+        })
+      }catch(error){
+        console.log(error)
+      }
     }
 
     // FOOTER

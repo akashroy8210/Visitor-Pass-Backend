@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt")
 const { sendEmail } = require("../utils/SendEmail")
 const Visitor = require("../models/visitorModel")
 const Appointment = require("../models/appointmentModel")
+const Logs=require("../models/logsModel")
 exports.createStaff = async (req, res) => {
     try {
         const { name,email, password,role } = req.body
@@ -180,3 +181,15 @@ exports.getVisitorsAppointments=async(req,res)=>{
   }
 }
 
+
+exports.getAllLogs=async(req,res)=>{
+  try{
+    const logs=await Logs.find()
+    if(logs.length===0){
+      return res.status(400).json({message:"No Logs Found"})
+    }
+    res.status(200).json({logs})
+  }catch(error){
+    res.status(500).json({message:error.message})
+  }
+}

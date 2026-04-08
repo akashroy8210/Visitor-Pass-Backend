@@ -2,6 +2,8 @@ const validator = require("validator")
 const User = require("../models/userModel")
 const bcrypt = require("bcrypt")
 const { sendEmail } = require("../utils/SendEmail")
+const Visitor = require("../models/visitorModel")
+const Appointment = require("../models/appointmentModel")
 exports.createStaff = async (req, res) => {
     try {
         const { name,email, password,role } = req.body
@@ -135,5 +137,46 @@ exports.createStaff = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: error.message })
     }
+}
+
+// get all staffs
+
+exports.getStaffs=async(req,res)=>{
+  try{
+    const staffs=await User.find({role:{$in:["Employee","Security"]}}).sort({createdAt:-1})
+    if(!staffs){
+      return res.status(400).json({message:"No Staffs Found"})
+    }
+    res.status(200).json({staffs})
+  }catch(error){
+    return res.status(500).json({message:error.message})
+  }
+}
+
+//get all visitors
+exports.getVisitors=async(req,res)=>{
+  try{
+    const visitors=await User.find({role:"Visitor"}).sort({createdAt:-1})
+    if(!visitors){
+      return res.status(400).json({message:"No Visitors Found"})
+    }
+    res.status(200).json({visitors})
+  }catch(error){
+    return res.status(500).json({message:error.message})
+  }
+}
+
+//get all appointments of visitors
+
+exports.getVisitorsAppointments=async(req,res)=>{
+  try{
+    const appointemnt=await Appointment.find().sort({createdAt:-1})
+    if(!appointemnt){
+      return res.status(400).json({message:"No Appointment Found"})
+    }
+    res.status(200).json({appointemnt})
+  }catch(error){
+    res.status(500).json({message:error.message})
+  }
 }
 

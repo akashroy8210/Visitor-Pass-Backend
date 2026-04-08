@@ -153,8 +153,9 @@ exports.verifyUser = async (req, res) => {
         const user = await User.findOne({ email })
         user.isVerified = true
         await user.save()
+        const token = await jwt.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" })
         await Otp.deleteOne({ email })
-        res.status(200).json({ user, message: "User Verified Successfully" })
+        res.status(200).json({ token,user, message: "User Verified Successfully" })
     } catch (error) {
         return res.status(500).json({ message: error.message })
     }

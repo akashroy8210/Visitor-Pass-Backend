@@ -114,5 +114,26 @@
 13. Test the API endpoints using tools like Postman or Thunder Client.
     
     
-
-
+## Admin
+- All Staff details //done
+- All Visitor details //done
+- All Logs details
+- All Appointment details //done
+- All Passes details
+## Employee
+- Appointment details  //done
+- Passes details 
+- Visitor approval  //done
+- Send confirmation email to visitor
+- Give Scheduled time for visit
+  
+## Security
+- Check-in/check-out details of visitors
+- View visitor details
+- View logs details
+## Visitor
+- Create request for approval //done
+- Check-in/check-out details
+- View appointment details    //done
+- View pass details
+-

@@ -3,6 +3,8 @@ const dotenv=require("dotenv")
 const connectionDB =require("./config/db")
 const AuthRoutes=require('./routes/AuthRoutes')
 const AdminRoutes=require("./routes/AdminRoutes")
+const visitorRoutes=require("./routes/VisitorRoutes")
+const employeeRoutes=require("./routes/EmployeeRoutes")
 dotenv.config()
 const server=express()
 server.use(express.json())
@@ -12,7 +14,8 @@ server.get('/',(req,res)=>{
 })
 server.use('/api/users',AuthRoutes)
 server.use('/api/admin',AdminRoutes)
-
+server.use('/api/users/visitor',visitorRoutes)
+server.use('/api/users/employee',employeeRoutes)
 const PORT=process.env.PORT || 8080
 
 server.listen(PORT,()=>{

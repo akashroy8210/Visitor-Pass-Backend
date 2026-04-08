@@ -24,6 +24,7 @@ exports.sendEmail=async ({to,subject,html})=>{
             subject,
             html
         })
+        res.status(200).json({message:"Email Sent Successfully"})
     }catch(error){
         console.log(error)
     }

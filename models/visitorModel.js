@@ -17,11 +17,7 @@ const visitorSchema=mongoose.Schema({
     phone:{
         type:Number,
         required:true
-    },
-    employeeId:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"User"
-    }],
+    }
 },{timestamps:true})
 
 module.exports=mongoose.model("Visitor",visitorSchema)

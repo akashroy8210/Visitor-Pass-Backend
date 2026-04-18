@@ -17,6 +17,10 @@ const visitorSchema=mongoose.Schema({
     phone:{
         type:Number,
         required:true
+    },
+    isAppointment:{
+        type:Boolean,
+        default:false
     }
 },{timestamps:true})
 

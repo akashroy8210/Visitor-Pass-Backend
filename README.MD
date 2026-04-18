@@ -134,4 +134,3 @@
 - Check-in/check-out details //done
 - View appointment details    //done
 - View pass details //done
--

@@ -38,7 +38,7 @@ exports.generatePDF = (data) => {
     doc.moveDown()
 
     // APPOINTMENT INFO
-    doc.text(`Date: ${new Date(data.date).toDateString()}`)
+    doc.text(`Date: ${new Date().toDateString()}`)
     doc.text(`Valid From: ${data.validFrom}`)
     doc.text(`Valid To: ${data.validTo}`)
 

@@ -11,12 +11,16 @@ const appointmentSchema=mongoose.Schema({
         ref:"User",
         required:true
     },
+    message:{
+        type:String,
+        required:true
+    },
     date:{type:Date},
     status:{
         type:String,
         enum:["pending","approved","rejected"],
         default:"pending"
     }
-},{timeStamps:true})
+},{timestamps:true})
 
 module.exports=mongoose.model("Appointment",appointmentSchema)

@@ -3,23 +3,26 @@ const User = require("../models/userModel")
 const bcrypt = require("bcrypt")
 const { sendEmail } = require("../utils/SendEmail")
 const Visitor = require("../models/visitorModel")
-const Appointment = require("../models/appointmentModel")
+const Appointment = require("../models/AppointmentModel")
 const Logs=require("../models/logsModel")
 exports.createStaff = async (req, res) => {
     try {
         const { name,email, password,role } = req.body
-        if (!name || !email || !password) {
+        if (!name || !email || !password || !role) {
             return res.status(400).json({ message: "All fields are required" })
         }
         if (!validator.isEmail(email)) {
             return res.status(400).json({ message: "Invalid email" })
         }
+        if (!["Employee", "Security"].includes(role)) {
+            return res.status(400).json({ message: "Invalid staff role" })
+        }
         if (!validator.isStrongPassword(password)) {
             return res.status(400).json({ message: "Please Enter Strong Password" })
         }
-        const employe = await User.findOne({ email, role: "Employee" })
-        if (employe) {
-            return res.status(400).json({ message: "Employee already exists" })
+        const existingUser = await User.findOne({ email })
+        if (existingUser) {
+            return res.status(400).json({ message: "User already exists" })
         }
         const salt = await bcrypt.genSalt(10)
         const hashPassword = await bcrypt.hash(password, salt)
@@ -154,14 +157,42 @@ exports.getStaffs=async(req,res)=>{
   }
 }
 
+exports.removeStaff=async(req,res)=>{
+  try{
+    const {id}=req.params
+    const staff=await User.findById(id)
+    if(!staff){
+      return res.status(400).json({message:"Staff Not Found"})
+    }
+    await User.findByIdAndDelete(id)
+    res.status(200).json({message:"Staff removed successfully"})
+  }catch(error){
+    return res.status(500).json({message:error.message})
+  }
+}
+
 //get all visitors
 exports.getVisitors=async(req,res)=>{
   try{
-    const visitors=await User.find({role:"Visitor"}).sort({createdAt:-1})
-    if(!visitors){
+    const visitors=await User.find({role:"Visitor",isVerified:true}).sort({createdAt:-1}).lean()
+    if(!visitors || visitors.length===0){
       return res.status(400).json({message:"No Visitors Found"})
     }
-    res.status(200).json({visitors})
+
+    const visitorIds = visitors.map((visitor) => visitor._id)
+    const appointments = await Appointment.find({ visitorId: { $in: visitorIds } })
+      .populate("employeeId", "name email message")
+      .sort({ createdAt: -1 })
+      .lean()
+
+    const visitorsWithAppointments = visitors.map((visitor) => ({
+      ...visitor,
+      appointments: appointments.filter(
+        (appointment) => appointment.visitorId.toString() === visitor._id.toString()
+      )
+    }))
+
+    res.status(200).json({visitors: visitorsWithAppointments})
   }catch(error){
     return res.status(500).json({message:error.message})
   }
@@ -184,10 +215,7 @@ exports.getVisitorsAppointments=async(req,res)=>{
 
 exports.getAllLogs=async(req,res)=>{
   try{
-    const logs=await Logs.find()
-    if(logs.length===0){
-      return res.status(400).json({message:"No Logs Found"})
-    }
+    const logs=await Logs.find().populate("visitorId").populate("passId")
     res.status(200).json({logs})
   }catch(error){
     res.status(500).json({message:error.message})

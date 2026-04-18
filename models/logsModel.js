@@ -14,10 +14,12 @@ const logsSchema=mongoose.Schema({
     checkInTime:{
         type:Date,
     },
+    checkOutTime:{
+        type:Date,
+    },
     status:{
         type:String,
-        enum:["checked-in","checked-out"],
-        default:"checked-in"
+        enum:["checked-in","checked-out"]
     }
 },{timeStamps:true})
 

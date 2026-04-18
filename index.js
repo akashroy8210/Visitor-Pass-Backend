@@ -10,7 +10,12 @@ const securityRoutes=require("./routes/SecurityRoutes")
 dotenv.config()
 const server=express()
 server.use(express.json())
-server.use(cors())
+server.use(cors(
+    {
+        origin:"https://visitor-pass-frontend.vercel.app",
+        credentials:true
+    }
+))
 connectionDB()
 server.get('/',(req,res)=>{
     res.send("Hello From the Backend Server and Buddy")

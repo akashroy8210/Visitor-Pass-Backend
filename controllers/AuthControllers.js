@@ -118,8 +118,8 @@ exports.signupUser = async (req, res) => {
     const imageUrl = await uploadImage(req.file.buffer)
     console.log(imageUrl)
     const user = await User.create({
-      name,
-      email,
+      name:name,
+      email:email,
       password: hashPassword,
       phone:phone,
       image:imageUrl

@@ -21,3 +21,23 @@ exports.uploadPDF = async (buffer) => {
         stream.end(buffer)
     })
 }
+exports.uploadImage=async(buffer)=>{
+    return new Promise ((resolve,reject)=>{
+        console.log("uploading image....")
+        const stream = cloudinary.uploader.upload_stream({
+            resource_type: "image",
+            type: "upload",
+            folder: "visitor_passes"
+        },
+            (error, result) => {
+                if (error) {
+                    console.log("cloudinary error", error)
+                    return reject(error)
+                }
+                console.log("uploaded", result.secure_url)
+                resolve(result.secure_url)
+            }
+        )
+        stream.end(buffer)
+    })
+}

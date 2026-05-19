@@ -22,6 +22,12 @@ const userSchema=mongoose.Schema({
         type:String,
         enum:["Employee","Admin","Security","Visitor"],
         default:"Visitor"
+    },
+    image:{
+        type:String
+    },
+    phone:{
+        type:Number
     }
 },{timestamps:true})
 

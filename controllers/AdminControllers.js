@@ -5,9 +5,10 @@ const { sendEmail } = require("../utils/SendEmail")
 const Visitor = require("../models/visitorModel")
 const Appointment = require("../models/AppointmentModel")
 const Logs=require("../models/logsModel")
+const {uploadImage}=require("../utils/uploadPdf")
 exports.createStaff = async (req, res) => {
     try {
-        const { name,email, password,role } = req.body
+        const { name,email, password,role,phone } = req.body
         if (!name || !email || !password || !role) {
             return res.status(400).json({ message: "All fields are required" })
         }
@@ -24,6 +25,7 @@ exports.createStaff = async (req, res) => {
         if (existingUser) {
             return res.status(400).json({ message: "User already exists" })
         }
+        const imageUrl=await uploadImage(req.file.buffer)
         const salt = await bcrypt.genSalt(10)
         const hashPassword = await bcrypt.hash(password, salt)
         const user = await User.create({
@@ -31,6 +33,8 @@ exports.createStaff = async (req, res) => {
             email,
             password: hashPassword,
             role,
+            image:imageUrl,
+            phone:phone,
             isVerified:true
         })
 
@@ -216,6 +220,9 @@ exports.getVisitorsAppointments=async(req,res)=>{
 exports.getAllLogs=async(req,res)=>{
   try{
     const logs=await Logs.find().populate("visitorId").populate("passId")
+    if(!logs){
+      return res.status(400).json({message:"No Logs Found"})
+    }
     res.status(200).json({logs})
   }catch(error){
     res.status(500).json({message:error.message})

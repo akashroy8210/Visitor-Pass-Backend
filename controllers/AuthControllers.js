@@ -23,12 +23,7 @@ exports.signupUser = async (req, res) => {
     if (existingUser && existingUser.isVerified) {
       return res.status(400).json({ message: "User already exists" })
     }
-    if (existingUser && !existingUser.isVerified) {
-      await User.findByIdAndDelete(existingUser._id)
-      if (existingOtp) {
-        await Otp.findByIdAndDelete(existingOtp._id)
-      }
-    }
+
     const otp = generateOTP()
     const salt = await bcrypt.genSalt(10)
     const hashOtp = await bcrypt.hash(otp, salt)
@@ -117,22 +112,39 @@ exports.signupUser = async (req, res) => {
     })
     const imageUrl = await uploadImage(req.file.buffer)
     console.log(imageUrl)
-    const user = await User.create({
-      name:name,
-      email:email,
-      password: hashPassword,
-      phone:phone,
-      image:imageUrl
-    })
+    if (existingUser && !existingUser.isVerified) {
+      await existingUser.updateOne({
+        $set: {
+          name: name,
+          email: email,
+          password: hashPassword,
+          phone: phone,
+          image: imageUrl
+        }
+      })
+      await existingOtp.updateOne({
+        $set: {
+          otp: hashOtp,
+          otpExpires
+        }
+      })
+      res.status(200).json({user:existingUser, message: "User Updated Successfully" })
+    } else {
+      const user = await User.create({
+        name: name,
+        email: email,
+        password: hashPassword,
+        phone: phone,
+        image: imageUrl
+      })
+      await Otp.create({
+        otp: hashOtp,
+        otpExpires,
+        email
+      })
+      res.status(201).json({ user, message: "User Created Successfully" })
+    }
 
-    
-    await Otp.create({
-      otp: hashOtp,
-      otpExpires,
-      email
-    })
-
-    res.status(201).json({ user, message: "User Created Successfully" })
   } catch (error) {
     return res.status(500).json({ message: error.message })
   }
@@ -186,7 +198,7 @@ exports.loginUser = async (req, res) => {
     }
     const token = await jwt.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" })
     const visitorProfile = await visitor.findOne({ email: email })
-    res.status(200).json({ user,visitorProfile, token, message: "Login Successfully" })
+    res.status(200).json({ user, visitorProfile, token, message: "Login Successfully" })
   } catch (error) {
     return res.status(500).json({ message: error.message })
   }

@@ -1,6 +1,7 @@
 const User = require("../models/userModel")
 const Visitor = require("../models/visitorModel")
 const Appointment = require("../models/AppointmentModel")
+const dotenv = require("dotenv").config()
 const { sendEmail } = require("../utils/SendEmail")
 const Pass = require("../models/passModel")
 const fs = require("fs")
@@ -14,7 +15,7 @@ exports.getAllAppointments = async (req, res) => {
       return res.status(404).json({ message: "Employee not found" })
     }
     const appointemnt = await Appointment.find({ employeeId: employee._id })
-      .populate("visitorId", "name email")
+      .populate("visitorId", "name email image")
       .sort({ createdAt: -1 })
     if (appointemnt.length === 0) {
       return res.status(400).json({ message: "No Appointment Found" })

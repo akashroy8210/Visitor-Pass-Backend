@@ -4,44 +4,36 @@ const bcrypt = require("bcrypt")
 const { sendEmail } = require("../utils/SendEmail")
 const Visitor = require("../models/visitorModel")
 const Appointment = require("../models/AppointmentModel")
-const Logs=require("../models/logsModel")
-const {uploadImage}=require("../utils/uploadPdf")
+const Logs = require("../models/logsModel")
+const { uploadImage } = require("../utils/uploadPdf")
 exports.createStaff = async (req, res) => {
-    try {
-        const { name,email, password,role,phone } = req.body
-        if (!name || !email || !password || !role) {
-            return res.status(400).json({ message: "All fields are required" })
-        }
-        if (!validator.isEmail(email)) {
-            return res.status(400).json({ message: "Invalid email" })
-        }
-        if (!["Employee", "Security"].includes(role)) {
-            return res.status(400).json({ message: "Invalid staff role" })
-        }
-        if (!validator.isStrongPassword(password)) {
-            return res.status(400).json({ message: "Please Enter Strong Password" })
-        }
-        const existingUser = await User.findOne({ email })
-        if (existingUser) {
-            return res.status(400).json({ message: "User already exists" })
-        }
-        const imageUrl=await uploadImage(req.file.buffer)
-        const salt = await bcrypt.genSalt(10)
-        const hashPassword = await bcrypt.hash(password, salt)
-        const user = await User.create({
-            name,
-            email,
-            password: hashPassword,
-            role,
-            image:imageUrl,
-            phone:phone,
-            isVerified:true
-        })
+  try {
+    const { name, email, password, role, phone } = req.body
+    if (!name || !email || !password || !role) {
+      return res.status(400).json({ message: "All fields are required" })
+    }
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ message: "Invalid email" })
+    }
+    if (!["Employee", "Security"].includes(role)) {
+      return res.status(400).json({ message: "Invalid staff role" })
+    }
+    if (!validator.isStrongPassword(password)) {
+      return res.status(400).json({ message: "Please Enter Strong Password" })
+    }
+    const existingUser = await User.findOne({ email })
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" })
+    }
+    const imageUrl = await uploadImage(req.file.buffer)
+    const salt = await bcrypt.genSalt(10)
+    const hashPassword = await bcrypt.hash(password, salt)
 
-        await sendEmail({
-            to: email,
-            subject: "Welcome to My Office",
-            html: `
+
+    await sendEmail({
+      to: email,
+      subject: "Welcome to My Office",
+      html: `
             <!DOCTYPE html>
 <html>
 <head>
@@ -139,48 +131,57 @@ exports.createStaff = async (req, res) => {
 </body>
 </html>
             `
-        })
+    })
+    const user = await User.create({
+      name,
+      email,
+      password: hashPassword,
+      role,
+      image: imageUrl,
+      phone: phone,
+      isVerified: true
+    })
 
-        res.status(200).json({ user, message: "Staff created successfully" })
-    } catch (error) {
-        return res.status(500).json({ message: error.message })
-    }
+    res.status(200).json({ user, message: "Staff created successfully" })
+  } catch (error) {
+    return res.status(500).json({ message: error.message })
+  }
 }
 
 // get all staffs
 
-exports.getStaffs=async(req,res)=>{
-  try{
-    const staffs=await User.find({role:{$in:["Employee","Security"]}}).sort({createdAt:-1})
-    if(!staffs){
-      return res.status(400).json({message:"No Staffs Found"})
+exports.getStaffs = async (req, res) => {
+  try {
+    const staffs = await User.find({ role: { $in: ["Employee", "Security"] } }).sort({ createdAt: -1 })
+    if (!staffs) {
+      return res.status(400).json({ message: "No Staffs Found" })
     }
-    res.status(200).json({staffs})
-  }catch(error){
-    return res.status(500).json({message:error.message})
+    res.status(200).json({ staffs })
+  } catch (error) {
+    return res.status(500).json({ message: error.message })
   }
 }
 
-exports.removeStaff=async(req,res)=>{
-  try{
-    const {id}=req.params
-    const staff=await User.findById(id)
-    if(!staff){
-      return res.status(400).json({message:"Staff Not Found"})
+exports.removeStaff = async (req, res) => {
+  try {
+    const { id } = req.params
+    const staff = await User.findById(id)
+    if (!staff) {
+      return res.status(400).json({ message: "Staff Not Found" })
     }
     await User.findByIdAndDelete(id)
-    res.status(200).json({message:"Staff removed successfully"})
-  }catch(error){
-    return res.status(500).json({message:error.message})
+    res.status(200).json({ message: "Staff removed successfully" })
+  } catch (error) {
+    return res.status(500).json({ message: error.message })
   }
 }
 
 //get all visitors
-exports.getVisitors=async(req,res)=>{
-  try{
-    const visitors=await User.find({role:"Visitor",isVerified:true}).sort({createdAt:-1}).lean()
-    if(!visitors || visitors.length===0){
-      return res.status(400).json({message:"No Visitors Found"})
+exports.getVisitors = async (req, res) => {
+  try {
+    const visitors = await User.find({ role: "Visitor", isVerified: true }).sort({ createdAt: -1 }).lean()
+    if (!visitors || visitors.length === 0) {
+      return res.status(400).json({ message: "No Visitors Found" })
     }
 
     const visitorIds = visitors.map((visitor) => visitor._id)
@@ -196,35 +197,35 @@ exports.getVisitors=async(req,res)=>{
       )
     }))
 
-    res.status(200).json({visitors: visitorsWithAppointments})
-  }catch(error){
-    return res.status(500).json({message:error.message})
+    res.status(200).json({ visitors: visitorsWithAppointments })
+  } catch (error) {
+    return res.status(500).json({ message: error.message })
   }
 }
 
 //get all appointments of visitors
 
-exports.getVisitorsAppointments=async(req,res)=>{
-  try{
-    const appointemnt=await Appointment.find().sort({createdAt:-1})
-    if(!appointemnt){
-      return res.status(400).json({message:"No Appointment Found"})
+exports.getVisitorsAppointments = async (req, res) => {
+  try {
+    const appointemnt = await Appointment.find().sort({ createdAt: -1 })
+    if (!appointemnt) {
+      return res.status(400).json({ message: "No Appointment Found" })
     }
-    res.status(200).json({appointemnt})
-  }catch(error){
-    res.status(500).json({message:error.message})
+    res.status(200).json({ appointemnt })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
   }
 }
 
 
-exports.getAllLogs=async(req,res)=>{
-  try{
-    const logs=await Logs.find().populate("visitorId").populate("passId")
-    if(!logs){
-      return res.status(400).json({message:"No Logs Found"})
+exports.getAllLogs = async (req, res) => {
+  try {
+    const logs = await Logs.find().populate("visitorId").populate("passId")
+    if (!logs) {
+      return res.status(400).json({ message: "No Logs Found" })
     }
-    res.status(200).json({logs})
-  }catch(error){
-    res.status(500).json({message:error.message})
+    res.status(200).json({ logs })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
   }
 }

@@ -29,6 +29,8 @@ exports.signupUser = async (req, res) => {
     const hashOtp = await bcrypt.hash(otp, salt)
     const hashPassword = await bcrypt.hash(password, salt)
     const otpExpires = new Date(Date.now() + 5 * 60 * 1000)
+    console.log(process.env.EMAIL)
+    console.log(process.env.EMAIL_PASS)
     await sendEmail({
       to: email,
       subject: "Verify Your Email Address",
@@ -128,7 +130,7 @@ exports.signupUser = async (req, res) => {
           otpExpires
         }
       })
-      res.status(200).json({user:existingUser, message: "User Updated Successfully" })
+      res.status(200).json({ user: existingUser, message: "User Updated Successfully" })
     } else {
       const user = await User.create({
         name: name,

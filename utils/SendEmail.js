@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer")
 const otpGenerator = require("otp-generator")
-
+const dotenv = require("dotenv").config()
 exports.generateOTP = () => {
     return otpGenerator.generate(6, {
         digits: true,
@@ -21,12 +21,14 @@ const transporter = nodemailer.createTransport({
 })
 exports.sendEmail = async ({ to, subject, html }) => {
     try {
-        await transporter.sendMail({
-            from: `My Office <${process.env.EMAIL}>`,
+        const info=await transporter.sendMail({
+            from: `My Office <${process.env.SENDER_EMAIL}>`,
             to,
             subject,
             html
         })
+
+        console.log(info)
     } catch (error) {
         console.log(error)
         throw error

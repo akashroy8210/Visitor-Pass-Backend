@@ -56,7 +56,6 @@ exports.createAppointmentResponse = async (req, res) => {
     if (status === "approved") {
       const validFrom= new Date(appointment.date)
       const  validTo= new Date(new Date(appointment.date).getTime() + (60 * 60 * 1000))
-
       // creating the pass
       const pass = await Pass.create({
         visitorId: appointment.visitorId,

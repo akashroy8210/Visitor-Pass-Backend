@@ -3,6 +3,7 @@ const Pass = require("../models/passModel")
 exports.scanQrCode = async (req, res) => {
     try {
         const { id } = req.body
+        console.log(id)
         const pass = await Pass.findById(id).populate("visitorId", "name").populate("employeeId", "name")
         if (!pass) {
             return res.status(400).json({ message: "No Pass Found" })

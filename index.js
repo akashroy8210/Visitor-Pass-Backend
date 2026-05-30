@@ -15,7 +15,6 @@ server.use(cors(
     //     origin:"https://visitor-pass-frontend.vercel.app",
     //     credentials:true
     // }
-    {origin:"*"}
 ))
 connectionDB()
 server.get('/',(req,res)=>{

@@ -13,7 +13,7 @@ exports.createAppointment=async(req,res)=>{
         const existingAppointment=await Appointment.findOne({visitorId:visitorId,employeeId:employeeId})
 
         //we now check that is the appointment is approved or not if yes then check is it expired or not if not then check from pass is check in or not
-        if(existingAppointment && existingAppointment.status==="approved" && new Date(existingAppointment.date)>new Date()){
+        if(existingAppointment && existingAppointment.status==="approved" && existingAppointment.isUsed){
             return res.status(400).json({message:"You Already Have an Appointment"})
         }
         const visitor=await User.findById(visitorId)

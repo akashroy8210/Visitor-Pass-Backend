@@ -26,6 +26,7 @@ exports.scanQrCode = async (req, res) => {
             }
             existingLog.checkOutTime = new Date()
             existingLog.status = "checked-out"
+            pass.isUsed = true
             await existingLog.save()
             return res.status(200).json({ message: "check-out successfully", existingLog, pass })
 
